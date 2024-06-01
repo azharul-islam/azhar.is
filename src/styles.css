@@ -1,0 +1,77 @@
+
+:root {
+	--font-body: "Proxima Nova", sans-serif;
+	--font-mono: 'Fira Mono', monospace;
+
+    --color-primary: #3a77d3;
+    --color-accent: rgb(53, 183, 179);
+    --color-light: #3bc2d1;
+
+
+	font-family: var(--font-body);
+	color: var(--color-text);
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+
+body {
+    margin: 0px;
+}
+
+
+.swiper-pagination-bullet {
+    width: 6px !important;
+    height: 6px !important;
+    background: white !important;
+    opacity: 1 !important;
+    border: 1px solid var(--color-dark) !important;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: var(--color-dark) !important;
+}
+
+
+@font-face {
+    font-family: "disposabledroid_bbbold";
+    src: url("$lib/assets/fonts/disposabledroidbb_bld-webfont.woff2")
+            format("woff2"),
+        url("./assets/fonts/disposabledroidbb_bld-webfont.woff")
+            format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "disposabledroid_bbbold_italic";
+    src: url("$lib/assets/fonts/disposabledroidbb_bldital-webfont.woff2")
+            format("woff2"),
+        url("$lib/assets/fonts/disposabledroidbb_bldital-webfont.woff")
+            format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "disposabledroid_bbitalic";
+    src: url("$lib/assets/fonts/disposabledroidbb_ital-webfont.woff2")
+            format("woff2"),
+        url("$lib/assets/fonts/disposabledroidbb_ital-webfont.woff")
+            format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "disposabledroid_bbregular";
+    src: url("$lib/assets/fonts/disposabledroidbb-webfont.woff2")
+            format("woff2"),
+        url("$lib/assets/fonts/disposabledroidbb-webfont.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+
+}
