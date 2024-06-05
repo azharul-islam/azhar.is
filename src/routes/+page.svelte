@@ -1,63 +1,90 @@
 <script>
-    import img from "$lib/assets/images/azhar.jpg";
+    import img from "../lib/assets/images/azhar.jpg?enhanced";
+
     import Logo from "./Logo.svelte";
     import Content from "./Content.svelte";
 </script>
 
-<div id="app" >
+<div id="app">
     <div class="main-container">
-    <div style="display:flex;">
-        <Logo />
-    </div>
-    <div
-        style="display: flex; flex-direction: row; justify-content: center; padding: 0px 20px;"
-    >
-        <img src={img} height="80" alt="Picture of Azhar" />
+        <div style="display:flex;">
+            <Logo />
+        </div>
+        <div
+            style="display: flex; flex-direction: row; justify-content: center; padding: 0px 20px;"
+        >
+            <!-- <enhanced:img src={img} height="80" alt="Picture of Azhar" /> -->
 
-        <div class="about">
-            <div class="container talk-bubble tri-right left-top">
+            <div class="about">
                 <!--            <span class="container header">About Me</span>-->
                 <p>
                     Welcome to my portfolio! 👋🏻 My name is Azharul Islam. I'm a
                     professional full-stack Software Developer since 2016, based
                     in Qatar, specialised in Mobile and Web apps.
                 </p>
-            </div>
-
-            <div class="container talk-bubble">
-                You can reach me on <a
-                    href="mailto:azhar.i@outlook.com?Subject=Hello"
-                    target="_top">azhar.i@outlook.com</a
-                >
-                or
-                <a href="https://wa.me/97433338469" title="Text on WhatsApp"
-                    >+974 3333 8469</a
-                >.
+                <div class="contact-links">
+                    <a
+                        href="mailto:azhar.i@outlook.com?Subject=Hello"
+                        class="contact-icon email"
+                        title="Email Azhar"
+                    >
+                        <i class="ph-duotone ph-envelope"></i>
+                    </a>
+                    <a
+                        href="https://wa.me/97433338469"
+                        class="contact-icon whatsapp"
+                        title="Text on WhatsApp"
+                    >
+                        <i class="ph-duotone ph-whatsapp-logo"></i>
+                    </a>
+                    <a
+                        href="tel:+97433338469"
+                        class="contact-icon whatsapp"
+                        title="Call Azhar"
+                    >
+                        <i class="ph-duotone ph-phone"></i>
+                    </a>
+                </div>
             </div>
         </div>
+        <br />
     </div>
-    <br />
-</div>
     <Content />
+    <footer>
+        <p>© {new Date().getFullYear()} Azharul Islam</p>
+    </footer>
 </div>
 
 <style lang="scss">
-   
     $color-dark: #1c4e6c;
 
     .main-container {
-       
         // background-color: rgb(236,190,241)
     }
+    .contact-links {
+        display: flex;
+        gap: 12px;
+    }
 
-    .talk-bubble {
-        margin: 0 0 8px 35px;
-        display: inline-block;
-        position: relative;
-        height: auto;
-        background-color: white;
-        font-size: 1rem;
-        padding: 8px 14px 8px 14px;
+    .contact-icon {
+        text-decoration: none;
+        color: var(--color-primary);
+        font-size: 1.7em;
+        display: flex;
+        justify-content: center;
+        transform: rotate(-12deg);
+        align-items: center;
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        background-color: #f6f6f6;
+    }
+
+    .contact-icon:hover {
+        transform: translate(2px, -2px);
+        color: black;
+        box-shadow: -0.15rem 0.15rem 0 black;
     }
 
     .about {
@@ -76,6 +103,7 @@
         margin-block-end: 0.8em;
         margin-inline-start: 0px;
         margin-inline-end: 0px;
+        line-height: 1.5rem;
     }
 
     h1 {
@@ -115,40 +143,8 @@
         }
     }
 
-    .tri-right.left-top:before {
-        content: " ";
-        position: absolute;
-        width: 0;
-        height: 0;
-        left: -25px;
-        right: auto;
-        top: -2px;
-        bottom: auto;
-        border: 23px solid;
-        border-color: transparent transparent transparent transparent;
-    }
-
-    .tri-right.left-top:after {
-        content: " ";
-        position: absolute;
-        width: 0;
-        height: 0;
-        left: -20px;
-        right: auto;
-        top: 0px;
-        bottom: auto;
-        border: 22px solid;
-        border-color: white transparent transparent transparent;
-    }
-
-    @media screen and (min-width: 992px) {
-        .talk-bubble {
-            margin: 0 90px 10px 35px;
-            display: inline-block;
-            position: relative;
-            height: auto;
-            font-size: 1rem;
-            line-height: 1.7;
-        }
+    footer {
+        text-align: center; /* Center the content */
+        padding: 2rem 2rem 0.5rem; /* Add padding (top, right, bottom, left) */
     }
 </style>

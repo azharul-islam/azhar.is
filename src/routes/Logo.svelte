@@ -12,7 +12,7 @@
         box-shadow: -0.45rem 0.28rem 0 #000000;
         transform: skew(0deg, -5deg) scaleX(0.9);
         user-select: none;
-        margin: 40px 30px 50px;
+        margin: 40px 20px 50px;
     }
 
     .moonstone-blue {
