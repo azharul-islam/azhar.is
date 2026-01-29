@@ -1,203 +1,369 @@
-<script>
-    import img from "../lib/assets/images/azhar.jpg?enhanced";
-
+<script lang="ts">
+    import { onMount } from 'svelte';
     import Logo from "./Logo.svelte";
     import Content from "./Content.svelte";
+    
+    let mounted = false;
+    let scrollY = 0;
+    
+    onMount(() => {
+        mounted = true;
+    });
+    
+    function handleScroll() {
+        scrollY = window.scrollY;
+    }
 </script>
 
+<svelte:window on:scroll={handleScroll} />
+
 <div id="app">
-    <div class="main-container">
-        <div class="header-container">
-            <div class="logo-container">
+    <!-- Hero Section -->
+    <section class="hero" class:mounted>
+        <div class="hero-content">
+            <div class="hero-header">
                 <Logo />
             </div>
             
-            <div class="profile-section">
+            <div class="hero-intro">
+                <h1 class="hero-title">
+                    <span class="title-line line-1">Software Engineering</span>
+                    <span class="title-line line-2">Manager & <span class="gradient-text">Frontend Expert</span></span>
+                </h1>
                 
-                <div class="about">
-                    <p>
-                        Welcome to my portfolio! 👋🏻 My name is Azharul Islam. I'm a
-                        Software Engineering Manager, Frontend Design and Development expert since 2016, based
-                        in Qatar. Below are some of my featured projects.
-                    </p>
-                    <div class="contact-links">
-                        <a
-                            href="mailto:azhar.i@outlook.com?Subject=Hello"
-                            class="contact-icon email"
-                            title="Email Azhar"
-                            aria-label="Email Azhar"
-                        >
-                            <i class="ph-duotone ph-envelope"></i>
-                        </a>
-                        <a
-                            href="https://wa.me/97433338469"
-                            class="contact-icon whatsapp"
-                            title="Text on WhatsApp"
-                            aria-label="Text on WhatsApp"
-                        >
-                            <i class="ph-duotone ph-whatsapp-logo"></i>
-                        </a>
-                        <a
-                            href="tel:+97433338469"
-                            class="contact-icon whatsapp"
-                            title="Call Azhar"
-                            aria-label="Call Azhar"
-                        >
-                            <i class="ph-duotone ph-phone"></i>
-                        </a>
-                    </div>
+                <p class="hero-description">
+                    Crafting exceptional digital experiences since 2016. 
+                    Specialized in mobile and web applications, currently based in Qatar.
+                    Below are some of my featured projects.
+                </p>
+                
+                <div class="contact-links">
+                    <a
+                        href="mailto:azhar.i@outlook.com?Subject=Hello"
+                        class="contact-btn"
+                        title="Email Azhar"
+                        aria-label="Email Azhar"
+                    >
+                        <i class="ph-duotone ph-envelope"></i>
+                        <span>Email</span>
+                    </a>
+                    <a
+                        href="https://wa.me/97433338469"
+                        class="contact-btn"
+                        title="Text on WhatsApp"
+                        aria-label="Text on WhatsApp"
+                    >
+                        <i class="ph-duotone ph-whatsapp-logo"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a
+                        href="tel:+97433338469"
+                        class="contact-btn"
+                        title="Call Azhar"
+                        aria-label="Call Azhar"
+                    >
+                        <i class="ph-duotone ph-phone"></i>
+                        <span>Call</span>
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
-    <Content />
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator" style="opacity: {Math.max(0, 1 - scrollY / 200)}">
+            <div class="scroll-line"></div>
+            <span>Scroll to explore</span>
+        </div>
+    </section>
+    
+    <!-- Projects Section -->
+    <section class="projects-section">
+        <div class="section-header">
+            <h2 class="section-title">Featured Projects</h2>
+            <p class="section-subtitle">A selection of work I'm proud of</p>
+        </div>
+        <Content />
+    </section>
+    
+    <!-- Footer -->
     <footer>
-        <p>© {new Date().getFullYear()} Azharul Islam</p>
+        <div class="footer-content">
+            <p class="footer-text">© {new Date().getFullYear()} Azharul Islam</p>
+            <p class="footer-subtext">Built with care</p>
+        </div>
     </footer>
 </div>
 
 <style lang="scss">
-    $color-dark: #1c4e6c;
-
-    .header-container {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 40px;
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-        justify-content: center;
+    #app {
+        min-height: 100vh;
     }
 
-    .logo-container {
-        flex-shrink: 0;
-    }
-
-    .profile-section {
+    /* Hero Section */
+    .hero {
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-        flex: 1;
+        justify-content: center;
+        align-items: center;
+        padding: var(--space-xl);
+        position: relative;
+        
+        &.mounted {
+            .hero-header {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .title-line {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .hero-description {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .contact-links {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     }
 
+    .hero-content {
+        max-width: 900px;
+        text-align: center;
+    }
+
+    .hero-header {
+        margin-bottom: var(--space-3xl);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s var(--ease-out);
+    }
+
+    .hero-intro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-xl);
+    }
+
+    .hero-title {
+        font-family: var(--font-heading);
+        font-size: var(--fs-4xl);
+        font-weight: 500;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    .title-line {
+        display: block;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.7s var(--ease-out);
+        
+        &.line-1 {
+            transition-delay: 0.2s;
+            color: var(--text-secondary);
+            font-size: var(--fs-2xl);
+            margin-bottom: var(--space-sm);
+        }
+        
+        &.line-2 {
+            transition-delay: 0.35s;
+        }
+    }
+
+    .gradient-text {
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-description {
+        font-size: var(--fs-lg);
+        color: var(--text-secondary);
+        max-width: 600px;
+        line-height: 1.7;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s var(--ease-out);
+        transition-delay: 0.5s;
+        margin: 0;
+    }
+
+    /* Contact Links */
     .contact-links {
         display: flex;
-        gap: 12px;
-    }
-
-    .contact-icon {
-        text-decoration: none;
-        color: var(--color-primary);
-        font-size: 1.7em;
-        display: flex;
+        gap: var(--space-md);
+        flex-wrap: wrap;
         justify-content: center;
-        transform: rotate(-12deg);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s var(--ease-out);
+        transition-delay: 0.65s;
+    }
+
+    .contact-btn {
+        display: inline-flex;
         align-items: center;
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        background-color: #f6f6f6;
+        gap: var(--space-sm);
+        padding: var(--space-md) var(--space-lg);
+        background: var(--bg-glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-full);
+        color: var(--text-primary);
+        font-size: var(--fs-sm);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s var(--ease-out);
+        
+        i {
+            font-size: 1.25em;
+            color: var(--accent-primary);
+            transition: transform 0.3s var(--ease-bounce);
+        }
+        
+        &:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            
+            i {
+                transform: scale(1.1);
+            }
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
     }
 
-    .contact-icon:hover {
-        transform: translate(2px, -2px);
-        color: black;
-        box-shadow: -0.15rem 0.15rem 0 black;
-    }
-
-    .about {
-        font-family: "Inter", sans-serif;
+    /* Scroll Indicator */
+    .scroll-indicator {
+        position: absolute;
+        bottom: var(--space-2xl);
+        left: 50%;
+        transform: translateX(-50%);
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
-        max-width: 700px;
-    }
-
-    p {
-        margin-block-start: 0em;
-        margin-block-end: 0.8em;
-        margin-inline-start: 0px;
-        margin-inline-end: 0px;
-        line-height: 1.5rem;
-    }
-
-
-    a {
-        user-select: none;
-        margin: 8px 0px;
-        font-weight: bold;
-        color: var(--color-dark);
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.2s;
-        box-shadow: none;
-        -webkit-tap-highlight-color: transparent;
-
-        &:visited {
-            color: var(--color-dark);
-        }
-
-        &:hover {
-            color: var(--color-accent);
-            box-shadow: 0 4px 0 0 var(--color-accent);
-        }
-
-        &:active {
-            color: var(--color-dark);
+        align-items: center;
+        gap: var(--space-sm);
+        color: var(--text-muted);
+        font-size: var(--fs-xs);
+        transition: opacity 0.3s var(--ease-out);
+        
+        span {
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
     }
 
+    .scroll-line {
+        width: 1px;
+        height: 40px;
+        background: linear-gradient(to bottom, var(--text-muted), transparent);
+        animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        50% {
+            opacity: 0.5;
+            transform: scaleY(0.8);
+        }
+    }
+
+    /* Projects Section */
+    .projects-section {
+        padding: var(--space-4xl) 0;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: var(--space-3xl);
+        padding: 0 var(--space-xl);
+    }
+
+    .section-title {
+        font-size: var(--fs-3xl);
+        font-weight: 500;
+        margin: 0 0 var(--space-sm);
+    }
+
+    .section-subtitle {
+        font-size: var(--fs-lg);
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Footer */
     footer {
-        text-align: center; /* Center the content */
-        padding: 2rem 2rem 0.5rem; /* Add padding (top, right, bottom, left) */
+        padding: var(--space-3xl) var(--space-xl);
+        border-top: 1px solid var(--glass-border);
     }
 
-    /* Responsive design for tablet and mobile */
+    .footer-content {
+        text-align: center;
+    }
+
+    .footer-text {
+        color: var(--text-secondary);
+        margin: 0 0 var(--space-xs);
+    }
+
+    .footer-subtext {
+        font-size: var(--fs-sm);
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
-        .header-container {
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            padding: 20px;
+        .hero {
+            padding: var(--space-lg);
+            min-height: calc(100vh - 60px);
         }
-
-        .logo-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
+        
+        .hero-header {
+            margin-bottom: var(--space-2xl);
         }
-
-        .profile-section {
-            align-items: center;
-            text-align: center;
-            width: 100%;
+        
+        .hero-title {
+            font-size: var(--fs-3xl);
         }
-
-        .about {
-            align-items: center;
-            text-align: center;
-            max-width: 100%;
+        
+        .title-line.line-1 {
+            font-size: var(--fs-xl);
         }
-
-        .contact-links {
-            justify-content: center;
+        
+        .contact-btn span {
+            display: none;
+        }
+        
+        .contact-btn {
+            padding: var(--space-md);
+            
+            i {
+                font-size: 1.5em;
+            }
+        }
+        
+        .scroll-indicator {
+            display: none;
         }
     }
 
     @media (max-width: 480px) {
-        .header-container {
-            padding: 15px;
-            gap: 25px;
-        }
-
-        .contact-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 1.5em;
+        .hero-description {
+            font-size: var(--fs-base);
         }
     }
 </style>

@@ -1,133 +1,277 @@
 <script lang="ts">
     import { portfolioData } from "../lib/data.js";
+    import { onMount } from "svelte";
 
     // Convert portfolioData object to array format for the list
     const list = Object.entries(portfolioData).map(([id, data]) => ({
         id,
         ...data,
     }));
+
+    let mounted = false;
+    let visibleCards: Set<string> = new Set();
+    
+    onMount(() => {
+        mounted = true;
+        
+        // Intersection Observer for staggered card reveals
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('data-id');
+                        if (id) {
+                            visibleCards.add(id);
+                            visibleCards = visibleCards; // Trigger reactivity
+                        }
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '50px' }
+        );
+        
+        // Observe all cards after a brief delay
+        setTimeout(() => {
+            document.querySelectorAll('.project-card').forEach((card) => {
+                observer.observe(card);
+            });
+        }, 100);
+        
+        return () => observer.disconnect();
+    });
 </script>
 
-<div>
-    <br />
-    <ul class="content">
-        {#each list as item (item.id)}
-            <li>
-                <a
-                    href={`/${item.id}`}
-                    style="text-decoration: none;color: inherit;"
-                    ><enhanced:img src={item.image} class="preview" />
-                    <div
-                        style="display: flex; padding: 28px 0px 24px; justify-content: space-between;"
-                    >
-                        <div style="flex:1; margin-inline-end: 12px;">
-                            <div class="title" style="margin-bottom: 0.2rem;">
-                                {item.title}
-                            </div>
-                            <div style="margin-top: 8px;" class="subtitle">{item.subtitle}</div>
-                        </div>
-                        <div class="open-icon">
-                            <i class="ph-bold ph-arrow-up-right"></i>
-                        </div>
-                    </div>
-                </a>
-            </li>
-        {/each}
-    </ul>
+<div class="projects-grid" class:mounted>
+    {#each list as item, index (item.id)}
+        <a 
+            href={`/${item.id}`}
+            class="project-card"
+            class:visible={visibleCards.has(item.id)}
+            data-id={item.id}
+            style="--delay: {index * 0.1}s"
+        >
+            <div class="card-image-wrapper">
+                <enhanced:img src={item.image} class="card-image" alt={item.title} />
+                <div class="card-overlay">
+                    <span class="view-project">
+                        <i class="ph-bold ph-arrow-up-right"></i>
+                        View Project
+                    </span>
+                </div>
+            </div>
+            
+            <div class="card-content">
+                <div class="card-info">
+                    <h3 class="card-title">{item.title}</h3>
+                    <p class="card-subtitle">{item.subtitle}</p>
+                </div>
+                
+                <div class="card-arrow">
+                    <i class="ph-bold ph-arrow-up-right"></i>
+                </div>
+            </div>
+            
+            <div class="card-glow"></div>
+        </a>
+    {/each}
 </div>
 
 <style lang="scss">
-    .content {
-        margin: auto;
-        max-width: 2000px;
-        padding: 12px 42px;
+    .projects-grid {
         display: grid;
-        align-content: start;
-        justify-content: center;
-        grid-template-columns: repeat(auto-fill, 420px);
-        grid-row-gap: 16px;
-        grid-column-gap: 16px;
-        list-style: none;
-        overflow-y: auto;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: var(--space-xl);
+        padding: 0 var(--space-xl);
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
-    .content li {
-        cursor: pointer;
-        border-radius: 5px;
-        padding: 40px 45px 0 45px;
-        background-color: #f6f6f6;
+    .project-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-secondary);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        opacity: 0;
+        transform: translateY(40px);
+        transition: 
+            opacity 0.6s var(--ease-out),
+            transform 0.6s var(--ease-out),
+            border-color 0.3s var(--ease-out);
+        
+        &.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: var(--delay, 0s);
+        }
+        
+        &:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            
+            .card-image {
+                transform: scale(1.05);
+            }
+            
+            .card-overlay {
+                opacity: 1;
+            }
+            
+            .card-arrow {
+                transform: translate(2px, -2px);
+                background: var(--accent-primary);
+                border-color: var(--accent-primary);
+                
+                i {
+                    color: white;
+                }
+            }
+            
+            .card-glow {
+                opacity: 1;
+            }
+        }
     }
 
-    .content .preview {
+    .card-image-wrapper {
+        position: relative;
         width: 100%;
-        height: 200px;
-        border-radius: 6px;
-
-        box-shadow: 0 1.5rem 20px -20px rgba(0, 0, 0, 0.345);
-        transition: all 300ms cubic-bezier(0.165, 0.84, 0.44, 1);
-        object-fit: cover;
+        height: 220px;
+        overflow: hidden;
+        background: var(--bg-tertiary);
     }
 
-    .open-icon {
-        border-radius: 100%;
-        width: 50px;
-        height: 50px;
-        border: 1px solid black;
-        // background-color: #bbbbbb2d;
-        // background-color: #9494942d;
+    .card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s var(--ease-out);
+    }
 
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(10, 10, 15, 0.2) 0%,
+            rgba(10, 10, 15, 0.8) 100%
+        );
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: var(--space-lg);
+        opacity: 0;
+        transition: opacity 0.3s var(--ease-out);
+    }
+
+    .view-project {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-sm) var(--space-md);
+        background: var(--accent-gradient);
+        border-radius: var(--radius-full);
+        color: white;
+        font-size: var(--fs-sm);
+        font-weight: 500;
+        
+        i {
+            font-size: 1.1em;
+        }
+    }
+
+    .card-content {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: var(--space-md);
+        padding: var(--space-lg);
+    }
+
+    .card-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .card-title {
+        font-family: var(--font-heading);
+        font-size: var(--fs-xl);
+        font-weight: 600;
+        margin: 0 0 var(--space-xs);
+        color: var(--text-primary);
+    }
+
+    .card-subtitle {
+        font-size: var(--fs-sm);
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.5;
+        
+        /* Limit to 2 lines */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-arrow {
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        // color: var(--color-primary);
-        color: black;
-
-        transform: rotate(-10deg);
-
-        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-        font-size: 1.5em;
-
-    }
-
-    
-
-    .content li:hover .open-icon {
-        transform: translate(2px, -2px);
-        box-shadow: -0.18rem 0.18rem 0 black;
-        color: black;
-       background-color: #9494942d;
-
-
-    }
-    .content li:hover .preview {
-        box-shadow: 0 2rem 15px -25px rgba(0, 0, 0, 0.654);
-    }
-
-    .title {
-        font-family: Lora, sans-serif;
-        font-size: 1.5em;
-        font-weight: 700;
-    }
-
-    .subtitle {
-        font-size: 0.8em;
-        font-family: "Inter", sans-serif;
-        color: rgb(166, 166, 166);
-    }
-
-    @media only screen and (max-width: 500px) {
-        .content {
-            grid-template-columns: repeat(1, auto);
-                // padding-inline-start: 0 ;
-            // padding-inline-end: 0 !important;
-            margin-left: 0px;
-            /* set to 0 if your not using a list-style-type */
-            padding: 0px 10px;
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-full);
+        transition: all 0.3s var(--ease-out);
+        
+        i {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+            transition: color 0.3s var(--ease-out);
         }
+    }
 
-        .content li {
-            padding: 40px 20px 0 20px;
+    .card-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            ellipse at 50% 0%,
+            rgba(99, 102, 241, 0.1) 0%,
+            transparent 70%
+        );
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.5s var(--ease-out);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .projects-grid {
+            grid-template-columns: 1fr;
+            padding: 0 var(--space-md);
+            gap: var(--space-lg);
         }
-  
+        
+        .card-image-wrapper {
+            height: 200px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .projects-grid {
+            padding: 0 var(--space-sm);
+        }
+        
+        .card-content {
+            padding: var(--space-md);
+        }
+        
+        .card-title {
+            font-size: var(--fs-lg);
+        }
     }
 </style>

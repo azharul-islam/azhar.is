@@ -2,6 +2,7 @@
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
     import { portfolioData } from "../../lib/data.js";
+    import { onMount, onDestroy } from "svelte";
 
     // Get the slug from route params
     $: slug = $page.params.slug;
@@ -10,11 +11,22 @@
     // Full-screen viewer state
     let fullscreenImageIndex: number | null = null;
     let isFullscreen = false;
+    let mounted = false;
 
     // Handle 404 - redirect to home if project not found
     $: if (slug && !project) {
         goto("/");
     }
+
+    onMount(() => {
+        mounted = true;
+        window.addEventListener("keydown", handleKeydown);
+    });
+
+    onDestroy(() => {
+        window.removeEventListener("keydown", handleKeydown);
+        document.body.style.overflow = "";
+    });
 
     // Open full-screen viewer
     function openFullscreen(index: number) {
@@ -59,206 +71,267 @@
             prevImage();
         }
     }
-
-    // Add keyboard event listener
-    import { onMount, onDestroy } from "svelte";
-    onMount(() => {
-        window.addEventListener("keydown", handleKeydown);
-    });
-    onDestroy(() => {
-        window.removeEventListener("keydown", handleKeydown);
-        document.body.style.overflow = "";
-    });
 </script>
 
 {#if project}
-    <div class="description-page">
-        <div class="header">
+    <div class="project-page" class:mounted>
+        <!-- Hero Section with Back Link -->
+        <header class="project-header">
             <a href="/" class="back-link">
                 <i class="ph-bold ph-arrow-left"></i>
                 <span>Back to Portfolio</span>
             </a>
+        </header>
+
+        <!-- Project Hero Image -->
+        <div class="hero-image-wrapper">
+            <enhanced:img src={project.image} alt={project.title} class="hero-image" />
+            <div class="hero-overlay"></div>
         </div>
 
-        <div class="content">
-            <div class="project-header">
-                <h1 class="title">{project.title}</h1>
-                <p class="subtitle">{project.subtitle}</p>
+        <!-- Project Content -->
+        <main class="project-content">
+            <div class="project-info">
+                <h1 class="project-title">{project.title}</h1>
+                <p class="project-subtitle">{project.subtitle}</p>
             </div>
 
-            <div class="description">
+            <div class="project-description">
                 <p>{project.description}</p>
             </div>
 
-            <div class="gallery">
+            <!-- Gallery Section -->
+            <section class="gallery-section">
                 <h2 class="gallery-title">Gallery</h2>
-                <div class="image-grid">
+                <div class="gallery-grid">
                     {#each project.images as image, index}
                         <button
                             type="button"
-                            class="image-wrapper"
+                            class="gallery-item"
                             on:click={() => openFullscreen(index)}
                             on:keydown={(e) => e.key === 'Enter' && openFullscreen(index)}
                             aria-label="View {project.title} - Image {index + 1} in fullscreen"
+                            style="--delay: {index * 0.05}s"
                         >
                             <enhanced:img src={image} alt="{project.title} - Image {index + 1}" class="gallery-image" />
-                            <div class="image-overlay">
+                            <div class="gallery-overlay">
                                 <i class="ph-bold ph-magnifying-glass-plus"></i>
                             </div>
                         </button>
                     {/each}
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="project-footer">
+            <a href="/" class="footer-back">
+                <i class="ph-bold ph-arrow-left"></i>
+                <span>Back to all projects</span>
+            </a>
+        </footer>
     </div>
 {/if}
 
+<!-- Fullscreen Lightbox -->
 {#if isFullscreen && fullscreenImageIndex !== null && project?.images}
     <div
-        class="fullscreen-overlay"
+        class="lightbox"
         on:click={closeFullscreen}
         on:keydown={(e) => e.key === 'Enter' && closeFullscreen()}
         role="dialog"
         aria-modal="true"
         tabindex="-1"
     >
-        <button class="close-button" on:click={closeFullscreen} aria-label="Close">
+        <button class="lightbox-close" on:click={closeFullscreen} aria-label="Close">
             <i class="ph-bold ph-x"></i>
         </button>
-        <button class="nav-button prev-button" on:click|stopPropagation={prevImage} aria-label="Previous image">
+        
+        <button class="lightbox-nav prev" on:click|stopPropagation={prevImage} aria-label="Previous image">
             <i class="ph-bold ph-arrow-left"></i>
         </button>
-        <button class="nav-button next-button" on:click|stopPropagation={nextImage} aria-label="Next image">
+        
+        <button class="lightbox-nav next" on:click|stopPropagation={nextImage} aria-label="Next image">
             <i class="ph-bold ph-arrow-right"></i>
         </button>
-        <div class="fullscreen-image-container">
+        
+        <div class="lightbox-content" on:click|stopPropagation>
             <enhanced:img
                 src={project.images[fullscreenImageIndex]}
                 alt="{project.title} - Image {fullscreenImageIndex + 1}"
-                class="fullscreen-image"
+                class="lightbox-image"
             />
         </div>
-        <div class="image-counter">
+        
+        <div class="lightbox-counter">
             {fullscreenImageIndex + 1} / {project.images.length}
         </div>
     </div>
 {/if}
 
 <style lang="scss">
-    .description-page {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        min-height: calc(100vh - 40px);
+    .project-page {
+        min-height: 100vh;
+        opacity: 0;
+        
+        &.mounted {
+            opacity: 1;
+            animation: fadeIn 0.5s var(--ease-out) forwards;
+        }
     }
 
-    .header {
-        margin-bottom: 40px;
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Header */
+    .project-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: var(--space-lg) var(--space-xl);
+        z-index: var(--z-sticky);
+        background: linear-gradient(to bottom, var(--bg-primary) 0%, transparent 100%);
     }
 
     .back-link {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        color: black;
+        gap: var(--space-sm);
+        padding: var(--space-sm) var(--space-md);
+        background: var(--bg-glass);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-full);
+        color: var(--text-primary);
+        font-size: var(--fs-sm);
+        font-weight: 500;
         text-decoration: none;
-        font-family: "Inter", sans-serif;
-        font-size: 1em;
-        padding: 12px 20px;
-        border-radius: 5px;
-        background-color: #f6f6f6;
-        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-        border: 1px solid black;
-        transform: rotate(-1deg);
-
+        transition: all 0.3s var(--ease-out);
+        
         i {
-            font-size: 1.2em;
-        }
-
-        &:hover {
-            transform: translate(2px, -2px);
-            box-shadow: -0.15rem 0.15rem 0 black;
-            background-color: #e8e8e8;
-        }
-
-        &:active {
-            transform: translate(0, 0);
-            box-shadow: none;
-        }
-    }
-
-    .content {
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
-    }
-
-    .project-header {
-        .title {
-            font-family: Lora, sans-serif;
-            font-size: 2.5em;
-            font-weight: 700;
-            margin: 0 0 0.5rem 0;
-            line-height: 1.2;
-        }
-
-        .subtitle {
             font-size: 1.1em;
-            font-family: "Inter", sans-serif;
-            color: rgb(166, 166, 166);
-            margin: 0;
+            transition: transform 0.3s var(--ease-out);
+        }
+        
+        &:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--accent-primary);
+            
+            i {
+                transform: translateX(-3px);
+            }
         }
     }
 
-    .description {
-        font-family: "Inter", sans-serif;
-        font-size: 1.1em;
-        line-height: 1.8;
-        max-width: 800px;
-        color: #333;
+    /* Hero Image */
+    .hero-image-wrapper {
+        position: relative;
+        width: 100%;
+        height: 50vh;
+        min-height: 400px;
+        overflow: hidden;
+    }
 
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(10, 10, 15, 0.5) 50%,
+            var(--bg-primary) 100%
+        );
+    }
+
+    /* Content */
+    .project-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: var(--space-3xl) var(--space-xl);
+        margin-top: -100px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .project-info {
+        margin-bottom: var(--space-2xl);
+    }
+
+    .project-title {
+        font-family: var(--font-heading);
+        font-size: var(--fs-4xl);
+        font-weight: 500;
+        margin: 0 0 var(--space-sm);
+        line-height: 1.1;
+    }
+
+    .project-subtitle {
+        font-size: var(--fs-lg);
+        color: var(--text-muted);
+        margin: 0;
+        max-width: 700px;
+    }
+
+    .project-description {
+        margin-bottom: var(--space-3xl);
+        
         p {
-            margin: 0;
+            font-size: var(--fs-lg);
+            line-height: 1.8;
+            color: var(--text-secondary);
+            max-width: 800px;
         }
     }
 
-    .gallery {
-        margin-top: 20px;
+    /* Gallery */
+    .gallery-section {
+        margin-bottom: var(--space-3xl);
     }
 
     .gallery-title {
-        font-family: Lora, sans-serif;
-        font-size: 2em;
-        font-weight: 700;
-        margin: 0 0 30px 0;
+        font-family: var(--font-heading);
+        font-size: var(--fs-2xl);
+        font-weight: 500;
+        margin: 0 0 var(--space-xl);
     }
 
-    .image-grid {
+    .gallery-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--space-md);
     }
 
-    .image-wrapper {
+    .gallery-item {
         position: relative;
-        cursor: pointer;
-        border-radius: 8px;
-        overflow: hidden;
-        background-color: #f6f6f6;
-        transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
         aspect-ratio: 4/3;
-        border: none;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+        background: var(--bg-secondary);
+        cursor: pointer;
         padding: 0;
-
+        transition: all 0.3s var(--ease-out);
+        
         &:hover {
+            border-color: var(--accent-primary);
             transform: translateY(-4px);
-
-            .image-overlay {
-                opacity: 1;
-            }
-
+            
             .gallery-image {
                 transform: scale(1.05);
+            }
+            
+            .gallery-overlay {
+                opacity: 1;
             }
         }
     }
@@ -267,185 +340,199 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-        display: block;
+        transition: transform 0.5s var(--ease-out);
     }
 
-    .image-overlay {
+    .gallery-overlay {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
+        inset: 0;
+        background: rgba(10, 10, 15, 0.6);
         display: flex;
         align-items: center;
         justify-content: center;
         opacity: 0;
-        transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-
+        transition: opacity 0.3s var(--ease-out);
+        
         i {
-            font-size: 2.5em;
+            font-size: 2em;
             color: white;
         }
     }
 
-    .fullscreen-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.95);
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        animation: fadeIn 0.3s ease-in-out;
+    /* Footer */
+    .project-footer {
+        padding: var(--space-3xl) var(--space-xl);
+        border-top: 1px solid var(--glass-border);
+        text-align: center;
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
+    .footer-back {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-md) var(--space-lg);
+        background: var(--bg-glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-full);
+        color: var(--text-secondary);
+        font-size: var(--fs-sm);
+        text-decoration: none;
+        transition: all 0.3s var(--ease-out);
+        
+        i {
+            transition: transform 0.3s var(--ease-out);
         }
-        to {
-            opacity: 1;
-        }
-    }
-
-    .fullscreen-image-container {
-        max-width: 90vw;
-        max-height: 90vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: default;
-    }
-
-    .fullscreen-image {
-        max-width: 100%;
-        max-height: 90vh;
-        object-fit: contain;
-        border-radius: 8px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    }
-
-    .close-button {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 2px solid white;
-        color: white;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5em;
-        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-        z-index: 10000;
-
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+            
+            i {
+                transform: translateX(-3px);
+            }
+        }
+    }
+
+    /* Lightbox */
+    .lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: var(--z-modal);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s var(--ease-out);
+        cursor: pointer;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: var(--space-lg);
+        right: var(--space-lg);
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-full);
+        color: white;
+        font-size: 1.5em;
+        cursor: pointer;
+        transition: all 0.3s var(--ease-out);
+        z-index: 1;
+        
+        &:hover {
+            background: var(--bg-glass-hover);
             transform: scale(1.1);
         }
-
-        &:active {
-            transform: scale(0.95);
-        }
     }
 
-    .nav-button {
+    .lightbox-nav {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.1);
-        border: 2px solid white;
-        color: white;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        cursor: pointer;
+        width: 56px;
+        height: 56px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.8em;
-        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-        z-index: 10000;
-
+        background: var(--bg-glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-full);
+        color: white;
+        font-size: 1.5em;
+        cursor: pointer;
+        transition: all 0.3s var(--ease-out);
+        z-index: 1;
+        
+        &.prev {
+            left: var(--space-lg);
+        }
+        
+        &.next {
+            right: var(--space-lg);
+        }
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--bg-glass-hover);
             transform: translateY(-50%) scale(1.1);
         }
-
-        &:active {
-            transform: translateY(-50%) scale(0.95);
-        }
-
-        &.prev-button {
-            left: 20px;
-        }
-
-        &.next-button {
-            right: 20px;
-        }
     }
 
-    .image-counter {
+    .lightbox-content {
+        max-width: 90vw;
+        max-height: 85vh;
+        cursor: default;
+    }
+
+    .lightbox-image {
+        max-width: 100%;
+        max-height: 85vh;
+        object-fit: contain;
+        border-radius: var(--radius-md);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox-counter {
         position: absolute;
-        bottom: 30px;
+        bottom: var(--space-xl);
         left: 50%;
         transform: translateX(-50%);
+        padding: var(--space-sm) var(--space-md);
+        background: var(--bg-glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-full);
         color: white;
-        font-family: "Inter", sans-serif;
-        font-size: 1.1em;
-        background: rgba(0, 0, 0, 0.5);
-        padding: 10px 20px;
-        border-radius: 20px;
-        z-index: 10000;
+        font-size: var(--fs-sm);
+        font-family: var(--font-body);
     }
 
-    @media only screen and (max-width: 768px) {
-        .description-page {
-            padding: 15px;
+    /* Responsive */
+    @media (max-width: 768px) {
+        .project-header {
+            padding: var(--space-md);
         }
-
-        .project-header .title {
-            font-size: 2em;
+        
+        .hero-image-wrapper {
+            height: 40vh;
+            min-height: 300px;
         }
-
-        .image-grid {
+        
+        .project-content {
+            padding: var(--space-xl) var(--space-md);
+            margin-top: -60px;
+        }
+        
+        .project-title {
+            font-size: var(--fs-3xl);
+        }
+        
+        .gallery-grid {
             grid-template-columns: 1fr;
         }
-
-        .nav-button {
-            width: 50px;
-            height: 50px;
-            font-size: 1.5em;
-
-            &.prev-button {
-                left: 10px;
+        
+        .lightbox-nav {
+            width: 44px;
+            height: 44px;
+            font-size: 1.2em;
+            
+            &.prev {
+                left: var(--space-sm);
             }
-
-            &.next-button {
-                right: 10px;
+            
+            &.next {
+                right: var(--space-sm);
             }
         }
-
-        .close-button {
-            top: 10px;
-            right: 10px;
+        
+        .lightbox-close {
             width: 40px;
             height: 40px;
-        }
-
-        .image-counter {
-            bottom: 20px;
-            font-size: 0.9em;
+            top: var(--space-sm);
+            right: var(--space-sm);
         }
     }
 </style>
