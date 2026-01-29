@@ -7,47 +7,48 @@
 
 <div id="app">
     <div class="main-container">
-        <div style="display:flex;">
-            <Logo />
-        </div>
-        <div
-            style="display: flex; flex-direction: row; justify-content: center; padding: 0px 20px;"
-        >
-            <!-- <enhanced:img src={img} height="80" alt="Picture of Azhar" /> -->
-
-            <div class="about">
-                <!--            <span class="container header">About Me</span>-->
-                <p>
-                    Welcome to my portfolio! 👋🏻 My name is Azharul Islam. I'm a
-                    professional full-stack Software Developer since 2016, based
-                    in Qatar, specialised in Mobile and Web apps.
-                </p>
-                <div class="contact-links">
-                    <a
-                        href="mailto:azhar.i@outlook.com?Subject=Hello"
-                        class="contact-icon email"
-                        title="Email Azhar"
-                    >
-                        <i class="ph-duotone ph-envelope"></i>
-                    </a>
-                    <a
-                        href="https://wa.me/97433338469"
-                        class="contact-icon whatsapp"
-                        title="Text on WhatsApp"
-                    >
-                        <i class="ph-duotone ph-whatsapp-logo"></i>
-                    </a>
-                    <a
-                        href="tel:+97433338469"
-                        class="contact-icon whatsapp"
-                        title="Call Azhar"
-                    >
-                        <i class="ph-duotone ph-phone"></i>
-                    </a>
+        <div class="header-container">
+            <div class="logo-container">
+                <Logo />
+            </div>
+            
+            <div class="profile-section">
+                
+                <div class="about">
+                    <p>
+                        Welcome to my portfolio! 👋🏻 My name is Azharul Islam. I'm a
+                        Software Engineering Manager, Frontend Design and Development expert since 2016, based
+                        in Qatar. Below are some of my featured projects.
+                    </p>
+                    <div class="contact-links">
+                        <a
+                            href="mailto:azhar.i@outlook.com?Subject=Hello"
+                            class="contact-icon email"
+                            title="Email Azhar"
+                            aria-label="Email Azhar"
+                        >
+                            <i class="ph-duotone ph-envelope"></i>
+                        </a>
+                        <a
+                            href="https://wa.me/97433338469"
+                            class="contact-icon whatsapp"
+                            title="Text on WhatsApp"
+                            aria-label="Text on WhatsApp"
+                        >
+                            <i class="ph-duotone ph-whatsapp-logo"></i>
+                        </a>
+                        <a
+                            href="tel:+97433338469"
+                            class="contact-icon whatsapp"
+                            title="Call Azhar"
+                            aria-label="Call Azhar"
+                        >
+                            <i class="ph-duotone ph-phone"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        <br />
     </div>
     <Content />
     <footer>
@@ -58,9 +59,29 @@
 <style lang="scss">
     $color-dark: #1c4e6c;
 
-    .main-container {
-        // background-color: rgb(236,190,241)
+    .header-container {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 40px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        justify-content: center;
     }
+
+    .logo-container {
+        flex-shrink: 0;
+    }
+
+    .profile-section {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        flex: 1;
+    }
+
     .contact-links {
         display: flex;
         gap: 12px;
@@ -88,14 +109,12 @@
     }
 
     .about {
-        grid-area: content;
         font-family: "Inter", sans-serif;
-
-        margin: 10px 0 0 0;
-        position: relative;
-        display: grid;
-        grid-template-columns: minmax(200px, 700px);
-        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        max-width: 700px;
     }
 
     p {
@@ -106,17 +125,6 @@
         line-height: 1.5rem;
     }
 
-    h1 {
-        margin-block-start: 0em;
-        margin-block-end: 0em;
-        margin-inline-start: 0px;
-        margin-inline-end: 0px;
-    }
-
-    img {
-        border-radius: 50%;
-        border: 1px solid black;
-    }
 
     a {
         user-select: none;
@@ -146,5 +154,50 @@
     footer {
         text-align: center; /* Center the content */
         padding: 2rem 2rem 0.5rem; /* Add padding (top, right, bottom, left) */
+    }
+
+    /* Responsive design for tablet and mobile */
+    @media (max-width: 768px) {
+        .header-container {
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .logo-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .profile-section {
+            align-items: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .about {
+            align-items: center;
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .contact-links {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-container {
+            padding: 15px;
+            gap: 25px;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+        }
     }
 </style>

@@ -1,5 +1,5 @@
 <div id="brand">
-    AZHAR<span class="moonstone-blue">.DEV</span>
+    AZHAR<span class="moonstone-blue">.IS</span>
 </div>
 
 <style lang="scss">
@@ -12,10 +12,18 @@
         box-shadow: -0.45rem 0.28rem 0 #000000;
         transform: skew(0deg, -5deg) scaleX(0.9);
         user-select: none;
-        margin: 40px 20px 50px;
+        margin: 20px 20px 15px;
     }
 
     .moonstone-blue {
         color:  rgb(236,190,241);
+    }
+
+    /* Responsive adjustments for logo */
+    @media (max-width: 480px) {
+        #brand {
+            font-size: 32px;
+            margin: 15px 15px 10px;
+        }
     }
 </style>

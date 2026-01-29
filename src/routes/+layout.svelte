@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { LayoutData } from './$types';
+    // import type { LayoutData } from './$types';
     import '../styles.css'
     
-    export let data: LayoutData;
+    // export let data: LayoutData;
 	let isLoading = false;
 
 </script>
@@ -12,7 +12,7 @@
 		<div
 			class="loader loader--black"
 			style="margin: auto; width: 30px; height: 30px;"
-		/>
+		></div>
 	{:else}
 		<slot />
 	{/if}

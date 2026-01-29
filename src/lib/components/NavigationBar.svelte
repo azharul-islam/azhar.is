@@ -5,7 +5,7 @@
 
 <div class="nav-container">
     <div id="brand">
-       AZHAR<span class="moonstone-blue">.DEV</span>
+       AZHAR<span class="moonstone-blue">.IS</span>
     </div>
     <nav
         class:minimized={isMinimized}
@@ -58,11 +58,6 @@
                 color: var(--color-dark);
             }
 
-            &.router-link-exact-active {
-                color: var(--color-accent);
-                box-shadow: 0 4px 0 0 var(--color-accent);
-                pointer-events: none;
-            }
         }
 
         &.minimized {
@@ -70,9 +65,6 @@
         }
     }
 
-    #nav.nav-menu-active {
-        height: 70px;
-    }
 
     #brand {
         font-family: "disposabledroid_bbbold";
@@ -90,66 +82,10 @@
         color: var(--color-light);
     }
 
-    .menu-button {
-        position: absolute;
-        top: 0;
-        right: 0;
-        opacity: 0;
-        pointer-events: none;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        padding: 15px 18px 20px 18px;
-        justify-self: start;
-        transition: opacity 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-
-        div {
-            width: 22px;
-            height: 2px;
-            background-color: var(--color-dark);
-            margin: 7px 0;
-            transition: transform 0.1596s cubic-bezier(0.52, 0.16, 0.52, 0.84)
-                0.1008s;
-            transform: none;
-        }
-    }
-
-    .menu-button.menu-visible {
-        opacity: 1;
-        pointer-events: auto;
-        transform: scaleY(1);
-    }
-
-    .change .bar1 {
-        transform: rotate(-45deg) translate(-2.5px, 4px);
-    }
-
-    .change .bar2 {
-        transform: rotate(45deg) translate(-2.5px, -4px);
-    }
-
-    .swiper-pagination-bullet {
-        width: 6px !important;
-        height: 6px !important;
-        background: white !important;
-        opacity: 1 !important;
-        border: 1px solid var(--color-dark) !important;
-    }
-
-    .swiper-pagination-bullet-active {
-        background-color: var(--color-dark) !important;
-    }
 
    
 
     @media screen and (max-width: 900px) {
-        #app {
-            padding: 0;
-            grid-template-rows: 200px;
-            grid-template-columns: 1fr;
-            grid-template-areas:
-                "nav"
-                "content";
-        }
 
         .nav-container {
             grid-area: nav;
